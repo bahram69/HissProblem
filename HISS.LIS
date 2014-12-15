@@ -1,0 +1,197 @@
+
+Assembly listing of program C:\Users\Bahram\Documents\GitHub\HissProblem\HISS.LIS Date: 12/15/2014  at 2:40:33 PM
+
+   1             ;************************  FRAME.JL3  **************************  
+   2               
+   3             PORTA   EQU     0       ;Port A Data Register  
+   4             PORTB   EQU     1       ;Port B Data Register  
+   5             PORTD   EQU     3       ;Port D Data Register  
+   6               
+   7             DDRA    EQU     4       ;Port A Data Direction Register   
+   8             DDRB    EQU     5       ;Port B Data Direction Register  
+   9             DDRD    EQU     7       ;Port D Data Direction Register  
+  10               
+  11             PDCR    EQU     $A      ;Port D Control Register  
+  12             PTAPUE  EQU     $D      ;Port A Pull-up Enable Register  
+  13               
+  14             KBSCR   EQU     $1A     ;Keyboard Status and Control Register  
+  15             KBIER   EQU     $1B     ;Keyboard Interrupt Enable Register  
+  16               
+  17             INTSCR  EQU     $1D     ;IRQ Status and Control Register  
+  18             CONFIG2 EQU     $1E     ;Configuration Register 2  
+  19             CONFIG1 EQU     $1F     ;Configuration Register 1  
+  20               
+  21             TSC     EQU     $20     ;TIM Status and Control Register  
+  22             TCNTH   EQU     $21     ;TIM Counter Register High  
+  23             TCNTL   EQU     $22     ;TIM Counter Register Low  
+  24             TMODH   EQU     $23     ;TIM Counter Modulo Register High  
+  25             TMODL   EQU     $24     ;TIM Counter Modulo Register Low  
+  26             TSC0    EQU     $25     ;TIM Channel 0 Status & Control Register  
+  27             TCH0H   EQU     $26     ;TIM Channel 0 Register High  
+  28             TCH0L   EQU     $27     ;TIM Channel 0 Register Low  
+  29             TSC1    EQU     $28     ;TIM Channel 1 Status & Control Register  
+  30             TCH1H   EQU     $29     ;TIM Channel 1 Register High  
+  31             TCH1L   EQU     $2A     ;TIM Channel 1 Register Low  
+  32                               
+  33             ADSCR   EQU     $3C     ;ADC Status and Control Register  
+  34             ADR     EQU     $3D     ;ADC Data Register  
+  35             ADICLK  EQU     $3E     ;ADC Input Clock Register  
+  36               
+  37             BRSR    EQU     $FE00   ;Break Status Register  
+  38             RSR     EQU     $FE01   ;Reset Status Register  
+  39             BFCR    EQU     $FE03   ;Break Flag Control Register  
+  40             INT1    EQU     $FE04   ;Interrupt Status Register 1  
+  41             INT2    EQU     $FE05   ;Interrupt Status Register 2  
+  42             INT3    EQU     $FE06   ;Interrupt Status Register 3  
+  43               
+  44             FLCR    EQU     $FE08   ;Flash Control Register  
+  45             FLBPR   EQU     $FE09   ;Flash Block Protect Register  
+  46               
+  47             BRKH    EQU     $FE0C   ;Break Address Register High  
+  48             BRKL    EQU     $FE0D   ;Break Address Register Low  
+  49             BRKSCR  EQU     $FE0E   ;Break Status & Control Register  
+  50               
+  51             COPCTL  EQU     $FFFF   ;COP Control Register  
+  52               
+  53             ADCVEK  EQU     $FFDE   ;ADC Conversion Complete Vector  
+  54             KBDVEK  EQU     $FFE0   ;Keyboard Vector  
+  55             TOWVEK  EQU     $FFF2   ;TIM Overflow Vector  
+  56             TC1VEK  EQU     $FFF4   ;TIM Channel 1 Vector  
+  57             TC0VEK  EQU     $FFF6   ;TIM Channel 0 Vector     
+  58             EXTVEK  EQU     $FFFA   ;External Interrupt Vector  
+  59             SWIVEK  EQU     $FFFC   ;Software Interrupt Vector  
+  60             RESVEK  EQU     $FFFE   ;Reset Vector  
+  61               
+  62             RAM     EQU     $80     ;Minne för variabler  
+  63             FPROM   EQU     $EC00   ;Minne för program  
+  64               
+  65                     ORG     RESVEK          ;Definiera resetvektorn  
+  66 FFFE EC00           DW      START           ;START är läget vid programstarten      
+  67               
+  68                     ORG     RAM             ;Variabler  
+  69               
+  70               
+  71             ;Här läggs programmets variabler, deklarerade med DS-satser  
+  72             ;Hit flyttas också variablerna från biblioteksmodulerna  
+  73               
+  74                     ORG     FPROM     
+  75                       
+  76             ;Här läggs programmets konstanter och tabeller  
+  77               
+  78             START:  
+  79 EC00 101F           BSET    0,CONFIG1       ;Stäng av COP      
+  80                       
+  81                   ;Skriv programmet här...  
+  82 EC02 A6FF   		LDA #$FF      
+  83 EC04 B704   		STA DDRA      
+  84 EC06 B705   		STA DDRB      
+  85 EC08 3F00   		CLR PORTA      
+  86 EC0A 3F01   		CLR PORTB      
+  87             	    
+  88 EC0C A601   VÅN1:	LDA #1      
+  89 EC0E B701   		STA PORTB      
+  90 EC10 0A0309 		BRSET 5 PORTD UPP2        
+  91 EC13 0C033A 		BRSET 6 PORTD UPP3        
+  92 EC16 0E0347 		BRSET 7 PORTD UPP4        
+  93 EC19 CCEC0C 		JMP VÅN1        
+  94               
+  95 EC1C A601   UPP2:	LDA #1      
+  96 EC1E B700   		STA PORTA      
+  97 EC20 A620   		LDA #$20      
+  98 EC22 B701   		STA PORTB      
+  99 EC24 0303F5 		BRCLR 1 PORTD UPP2        
+ 100 EC27 3F00   		CLR PORTA      
+ 101 EC29 3F01   		CLR PORTB      
+ 102 EC2B CCEC2E 		JMP VÅN2        
+ 103             		  
+ 104 EC2E A602   VÅN2:	LDA #2      
+ 105 EC30 B701   		STA PORTB      
+ 106 EC32 080309 		BRSET 4 PORTD NER1        
+ 107 EC35 0C0318 		BRSET 6 PORTD UPP3        
+ 108 EC38 0E0325 		BRSET 7 PORTD UPP4        
+ 109 EC3B CCEC2E 		JMP VÅN2        
+ 110             		  
+ 111 EC3E A602   NER1:	LDA #2      
+ 112 EC40 B700   		STA PORTA      
+ 113 EC42 A610   		LDA #$10      
+ 114 EC44 B701   		STA PORTB      
+ 115 EC46 0103F5 		BRCLR 0 PORTD NER1        
+ 116 EC49 3F00   		CLR PORTA      
+ 117 EC4B 3F01   		CLR PORTB      
+ 118 EC4D CCEC0C 		JMP VÅN1        
+ 119             		  
+ 120 EC50 A601   UPP3:	LDA #1      
+ 121 EC52 B700   		STA PORTA      
+ 122 EC54 A640   		LDA #$40      
+ 123 EC56 B701   		STA PORTB      
+ 124 EC58 0503F5 		BRCLR 2 PORTD UPP3        
+ 125 EC5B 3F00   		CLR PORTA      
+ 126 EC5D CCEC70 		JMP VÅN3        
+ 127             		  
+ 128 EC60 A601   UPP4:	LDA #1      
+ 129 EC62 B700   		STA PORTA      
+ 130 EC64 A680   		LDA #$80      
+ 131 EC66 B701   		STA PORTB      
+ 132 EC68 0703F5 		BRCLR 3 PORTD UPP4        
+ 133 EC6B 3F00   		CLR PORTA      
+ 134 EC6D CCECA2 		JMP VÅN4        
+ 135             		  
+ 136 EC70 A604   VÅN3:	LDA #4      
+ 137 EC72 B701   		STA PORTB      
+ 138 EC74 0803C7 		BRSET 4 PORTD NER1        
+ 139 EC77 0A0306 		BRSET 5 PORTD NER2        
+ 140 EC7A 0E03E3 		BRSET 7 PORTD UPP4        
+ 141 EC7D CCEC70 		JMP VÅN3        
+ 142             		  
+ 143 EC80 A602   NER2	LDA #2      
+ 144 EC82 B700   		STA PORTA      
+ 145 EC84 A620   		LDA #$20      
+ 146 EC86 B701   		STA PORTB      
+ 147 EC88 0303F5 		BRCLR 1 PORTD NER2        
+ 148 EC8B 3F00   		CLR PORTA      
+ 149 EC8D 3F01   		CLR PORTB      
+ 150 EC8F CCEC2E 		JMP VÅN2        
+ 151             		  
+ 152 EC92 A602   NER3	LDA #2      
+ 153 EC94 B700   		STA PORTA      
+ 154 EC96 A640   		LDA #$40      
+ 155 EC98 B701   		STA PORTB      
+ 156 EC9A 0503F5 		BRCLR 2 PORTD NER3        
+ 157 EC9D 3F00   		CLR PORTA      
+ 158 EC9F CCEC70 		JMP VÅN3        
+ 159               
+ 160 ECA2 A608   VÅN4:	LDA #8      
+ 161 ECA4 B701   		STA PORTB      
+ 162 ECA6 080395 		BRSET 4 PORTD NER1        
+ 163 ECA9 0A03D4 		BRSET 5 PORTD NER2        
+ 164 ECAC 0C03E3 		BRSET 6 PORTD NER3        
+ 165 ECAF CCECA2 		JMP VÅN4		        
+ 166             		  
+ 167               
+ 168             ;Efter programmet läggs biblioteksmodulerna in.  
+ 169             ;Variabler flyttas till RAM.  
+ 170             ;Konstanter och tabeller flyttas till PAGE0.  
+ 171               
+ 172                     END  
+
+Total number of errors: 0
+
+Symbol table.  Number of symbols=60  Number of forward references=11
+
+FFDE*ADCVEK       003E*ADICLK       003D*ADR          003C*ADSCR        
+FE03*BFCR         FE0C*BRKH         FE0D*BRKL         FE0E*BRKSCR       
+FE00*BRSR         001F CONFIG1      001E*CONFIG2      FFFF*COPCTL       
+0004 DDRA         0005 DDRB         0007*DDRD         FFFA*EXTVEK       
+FE09*FLBPR        FE08*FLCR         EC00 FPROM        FE04*INT1         
+FE05*INT2         FE06*INT3         001D*INTSCR       FFE0*KBDVEK       
+001B*KBIER        001A*KBSCR        EC3E NER1         EC80 NER2         
+EC92 NER3         000A*PDCR         0000 PORTA        0001 PORTB        
+0003 PORTD        000D*PTAPUE       0080 RAM          FFFE RESVEK       
+FE01*RSR          EC00 START        FFFC*SWIVEK       FFF6*TC0VEK       
+FFF4*TC1VEK       0026*TCH0H        0027*TCH0L        0029*TCH1H        
+002A*TCH1L        0021*TCNTH        0022*TCNTL        0023*TMODH        
+0024*TMODL        FFF2*TOWVEK       0020*TSC          0025*TSC0         
+0028*TSC1         EC1C UPP2         EC50 UPP3         EC60 UPP4         
+EC0C VÅN1         EC2E VÅN2         EC70 VÅN3         ECA2 VÅN4         
+   
+End of Symbol Table
